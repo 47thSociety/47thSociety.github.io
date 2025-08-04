@@ -269,8 +269,8 @@
                 // Step 2: Sort the filtered items based on the selected sort order
                 filteredAndSortedItems = filteredItems.sort((a, b) => {
                     // Logic to prioritize "47th society" items, using a consistent data field
-                    const isA47thSociety = a.tile.owner === '47th society';
-                    const isB47thSociety = b.tile.owner === '47th society';
+                    const isA47thSociety = a.tile.owner === '47th Society';
+                    const isB47thSociety = b.tile.owner === '47th Society';
                     
                     if (isA47thSociety && !isB47thSociety) {
                         return -1; // 'a' comes first
