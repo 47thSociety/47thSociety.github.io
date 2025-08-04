@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>47th Marketplace</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font import for a modern look */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        #headers:hover {
+            color: fuchsia;
+        }
+    </style>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 p-4 min-h-screen flex flex-col items-center">
+
+    <!-- Main application container -->
+    <div class="container mx-auto p-4 md:p-8 bg-white dark:bg-gray-800 shadow-xl rounded-2xl w-full max-w-7xl">
+        <br /><center><img src="./logos.png" style="height: 15vh; margin-bottom: 10px;" onclick="window.open('https://nomstead.com/?ref=btrpazme', '_blank')" id="headers"></img></center>
+        <h1 class="text-3xl md:text-5xl font-extrabold text-center text-gray-900 dark:text-white mb-8 md:mb-12" onclick="window.open('https://nomstead.com/?ref=btrpazme', '_blank')" id="headers">
+            47th Marketplace
+        </h1>
+
+        <!-- Order Type Selector -->
+        <div class="flex justify-center space-x-4 mb-8">
+            <button id="buy-button" class="px-6 py-3 rounded-full font-bold text-white transition-colors duration-200 shadow-md bg-indigo-600 hover:bg-indigo-700">
+                Buy Orders
+            </button>
+            <button id="sell-button" class="px-6 py-3 rounded-full font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 shadow-md">
+                Sell Orders
+            </button>
+            <button class="px-6 py-3 rounded-full font-bold text-fuchsia-500 bg-green-300 hover:bg-green-400 hover:text-fuchsia-300 transition-colors duration-200 shadow-md" onclick="window.open('https://fortyseventhsociety.github.io/marketplace/index.html', '_blank')";>
+                Full Application
+            </button>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 mb-8 flex-wrap">
+            <div class="flex items-center space-x-2">
+                <label for="category-select" class="font-semibold text-gray-700 dark:text-gray-300">Category:</label>
+                <select id="category-select" class="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200">
+                    <option value="all">All</option>
+                </select>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <label for="sort-select" class="font-semibold text-gray-700 dark:text-gray-300">Sort by:</label>
+                <select id="sort-select" class="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200">
+                    <option value="default">Default</option>
+                    <option value="price-asc">Price (Low to High)</option>
+                    <option value="price-desc">Price (High to Low)</option>
+                    <option value="name-asc">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                </select>
+            </div>
+            <div class="flex items-center space-x-2">
+                <label for="items-per-page-select" class="font-semibold text-gray-700 dark:text-gray-300">Items per page:</label>
+                <select id="items-per-page-select" class="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Search bar -->
+        <div class="flex justify-center mb-4 px-4">
+            <input type="text" id="search-input" placeholder="Search by name or category..." 
+                   class="w-full max-w-md p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <!-- Total items count display -->
+        <div class="flex justify-center items-center text-center text-sm md:text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
+            <span id="item-count-display">0 items found</span>
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="loading-indicator" class="flex items-center justify-center space-x-2 text-xl text-indigo-500 hidden">
+            <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Loading marketplace items...</span>
+        </div>
+
+        <!-- Error message container -->
+        <div id="error-message" class="hidden bg-red-100 dark:bg-red-900 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl relative text-center">
+            <strong class="font-bold">Error!</strong>
+            <span class="block sm:inline" id="error-text">Something went wrong. Please try again later.</span>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div id="pagination-controls" class="flex justify-center items-center space-x-4 mt-8 hidden">
+            <button id="prev-page-button" class="px-4 py-2 rounded-full font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Previous
+            </button>
+            <span id="page-info" class="text-gray-700 dark:text-gray-300 font-semibold">Page 1 of 1</span>
+            <button id="next-page-button" class="px-4 py-2 rounded-full font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+            </button>
+        </div>
+
+        <!-- Container for marketplace items -->
+        <div id="marketplace-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8">
+            <!-- Items will be injected here by JavaScript -->
+        </div>
+    </div>
+    <br />
+      <p>
+        <span id="year"></span>❤️
+        <a href="https://nomstead.com/?ref=btrpazme" target="_blank"
+          >Data The Destroyer</a
+        >
+      </p>
+
+    <script>
+        // Self-contained JavaScript for fetching, filtering, and paginating data
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_URL = 'https://api.nomstead.com/open/marketplace';
+            // Placeholder URL for a gold coin image, since the API doesn't provide one directly in the item data.
+            const GOLD_COIN_IMAGE_URL = 'https://placehold.co/32x32/FFD700/000?text=G';
+
+            const container = document.getElementById('marketplace-container');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const errorMessage = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            const buyButton = document.getElementById('buy-button');
+            const sellButton = document.getElementById('sell-button');
+            const categorySelect = document.getElementById('category-select');
+            const sortSelect = document.getElementById('sort-select'); 
+            const itemsPerPageSelect = document.getElementById('items-per-page-select');
+            const searchInput = document.getElementById('search-input'); 
+            const paginationControls = document.getElementById('pagination-controls');
+            const prevButton = document.getElementById('prev-page-button');
+            const nextButton = document.getElementById('next-page-button');
+            const pageInfo = document.getElementById('page-info');
+            const itemCountDisplay = document.getElementById('item-count-display');
+
+            // Store the full dataset to allow for filtering, sorting, and pagination without re-fetching
+            let marketplaceData = { toBuy: [], toSell: [] };
+            // Variable to track the current active view ('toBuy' or 'toSell')
+            let currentView = 'toBuy';
+            let selectedCategory = 'all';
+            let currentSort = 'default';
+            let itemsPerPage = 20;
+            let currentPage = 1;
+            let filteredAndSortedItems = [];
+
+            /**
+             * Hides all dynamic content containers (loading, error, and main container)
+             * to prepare for displaying new content.
+             */
+            const resetUI = () => {
+                loadingIndicator.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+                container.innerHTML = '';
+            };
+
+            /**
+             * Updates the visual state of the buy/sell buttons.
+             * @param {string} view - The active view ('toBuy' or 'toSell').
+             */
+            const updateButtonState = (view) => {
+                // Reset both buttons to default style
+                buyButton.classList.remove('bg-indigo-600', 'text-white');
+                buyButton.classList.add('bg-white', 'text-indigo-600', 'dark:bg-gray-700', 'dark:text-indigo-400');
+                sellButton.classList.remove('bg-indigo-600', 'text-white');
+                sellButton.classList.add('bg-white', 'text-indigo-600', 'dark:bg-gray-700', 'dark:text-indigo-400');
+
+                // Apply active style to the selected button
+                if (view === 'toBuy') {
+                    buyButton.classList.remove('bg-white', 'text-indigo-600', 'dark:bg-gray-700', 'dark:text-indigo-400');
+                    buyButton.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700');
+                } else if (view === 'toSell') {
+                    sellButton.classList.remove('bg-white', 'text-indigo-600', 'dark:bg-gray-700', 'dark:text-indigo-400');
+                    sellButton.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700');
+                }
+            };
+
+            /**
+             * Populates the category filter dropdown based on the available data.
+             * @param {Array<Object>} items - The full list of items to get filters from.
+             */
+            const populateCategories = (items) => {
+                const categories = new Set();
+                items.forEach(item => {
+                    if (item.object?.category) {
+                        const parts = item.object.category.split('/');
+                        categories.add(parts[0]);
+                    }
+                });
+
+                // Clear previous options and add 'All'
+                categorySelect.innerHTML = '<option value="all">All</option>';
+
+                // Add new options for main categories, sorted alphabetically
+                Array.from(categories).sort().forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    categorySelect.appendChild(option);
+                });
+            };
+            
+            /**
+             * Applies the selected category filter, search query, and sort order, then re-renders items with pagination.
+             */
+            const applyFiltersAndSort = () => {
+                selectedCategory = categorySelect.value;
+                currentSort = sortSelect.value;
+                const searchQuery = searchInput.value.toLowerCase();
+                const currentItems = marketplaceData[currentView];
+
+                // Step 1: Filter the items based on the selected category and search query
+                let filteredItems = currentItems.filter(item => {
+                    const itemName = item.object?.metadata?.title?.toLowerCase() || item.object?.slug?.toLowerCase() || '';
+                    const fullItemCategory = item.object?.category?.toLowerCase() || '';
+                    const categoryParts = fullItemCategory.split('/');
+
+                    // Check for main category match
+                    let categoryMatches = true;
+                    if (selectedCategory !== 'all') {
+                        const mainCategory = categoryParts[0];
+                        categoryMatches = mainCategory === selectedCategory.toLowerCase();
+                    }
+
+                    const searchMatches = itemName.includes(searchQuery) || fullItemCategory.includes(searchQuery);
+
+                    return categoryMatches && searchMatches;
+                });
+                
+                // Step 2: Sort the filtered items based on the selected sort order
+                filteredAndSortedItems = filteredItems.sort((a, b) => {
+                    // Logic to prioritize "47th society" items, using a consistent data field
+                    const isA47thSociety = a.tile.owner === '47th society';
+                    const isB47thSociety = b.tile.owner === '47th society';
+                    
+                    if (isA47thSociety && !isB47thSociety) {
+                        return -1; // 'a' comes first
+                    }
+                    if (!isA47thSociety && isB47thSociety) {
+                        return 1; // 'b' comes first
+                    }
+                    // If both or neither are from '47th society', proceed with the secondary sort
+                    
+                    const priceA = a.pricing?.unitPrice || 0;
+                    const priceB = b.pricing?.unitPrice || 0;
+                    const nameA = a.object?.metadata?.title || a.object?.slug || '';
+                    const nameB = b.object?.metadata?.title || b.object?.slug || '';
+
+                    switch (currentSort) {
+                        case 'price-asc':
+                            return priceA - priceB;
+                        case 'price-desc':
+                            return priceB - priceA;
+                        case 'name-asc':
+                            return nameA.localeCompare(nameB);
+                        case 'name-desc':
+                            return nameB.localeCompare(nameA);
+                        case 'default':
+                        default:
+                            return 0;
+                    }
+                });
+                
+                itemCountDisplay.textContent = `${filteredAndSortedItems.length} items found`;
+                currentPage = 1; // Always reset to the first page when filters/sort change
+                renderPaginatedItems();
+            };
+            
+            /**
+             * Renders the current page of items and updates pagination controls.
+             */
+            const renderPaginatedItems = () => {
+                const totalPages = Math.ceil(filteredAndSortedItems.length / itemsPerPage);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const itemsToDisplay = filteredAndSortedItems.slice(startIndex, endIndex);
+
+                // Show/hide pagination controls based on total items
+                if (filteredAndSortedItems.length > itemsPerPage) {
+                    paginationControls.classList.remove('hidden');
+                } else {
+                    paginationControls.classList.add('hidden');
+                }
+                
+                // Render the items for the current page
+                renderMarketplaceItems(itemsToDisplay);
+                renderPaginationControls(totalPages);
+            };
+
+            /**
+             * Renders the pagination control buttons and page info.
+             * @param {number} totalPages - The total number of pages.
+             */
+            const renderPaginationControls = (totalPages) => {
+                // Update page information text
+                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+                // Disable/enable 'Previous' button
+                prevButton.disabled = currentPage === 1;
+
+                // Disable/enable 'Next' button
+                nextButton.disabled = currentPage === totalPages || totalPages === 0;
+            };
+
+            /**
+             * Fetches data from the Nomstead Marketplace API and displays it.
+             * @param {string} viewType - The type of order to display ('toBuy' or 'toSell').
+             */
+            const fetchMarketplaceData = async (viewType) => {
+                resetUI();
+                loadingIndicator.classList.remove('hidden');
+                currentView = viewType;
+                updateButtonState(currentView);
+                
+                currentPage = 1; // Reset to page 1 on new data fetch
+
+                try {
+                    const response = await fetch(API_URL);
+
+                    // Check if the network request was successful
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    // Store the full dataset
+                    if (data && Array.isArray(data.toBuy) && Array.isArray(data.toSell)) {
+                        marketplaceData = data;
+                        // Populate the categories and apply initial filters/sort
+                        populateCategories(marketplaceData[currentView]);
+                        applyFiltersAndSort(); // This will trigger the initial render
+                    } else {
+                        throw new Error(`Invalid data structure from API. Expected 'toBuy' and 'toSell' arrays.`);
+                    }
+
+                } catch (error) {
+                    console.error('Failed to fetch marketplace data:', error);
+                    errorText.textContent = `Failed to load items: ${error.message}`;
+                    errorMessage.classList.remove('hidden');
+
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                }
+            };
+
+            /**
+             * Renders the marketplace items from the fetched data into the UI.
+             * This function now uses more detailed fields from the API.
+             * @param {Array<Object>} items - The array of marketplace items to display.
+             */
+            const renderMarketplaceItems = (items) => {
+                container.innerHTML = ''; // Clear previous items
+
+                if (!items || items.length === 0) {
+                    container.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400 col-span-full">
+                        No marketplace items found.
+                    </p>`;
+                    return;
+                }
+
+                items.forEach(item => {
+                    // Determine which quantity field to display based on the current view
+                    let quantityValue;
+                    let quantityLabel;
+
+                    if (currentView === 'toBuy') {
+                        quantityValue = item.pricing.availableQuantity;
+                        quantityLabel = 'Available Quantity';
+                    } else { // 'toSell'
+                        quantityValue = item.pricing.desiredQuantity;
+                        quantityLabel = 'Desired Quantity';
+                    }
+
+                    // Get core data, handling potential missing fields
+                    const itemName = item.object?.metadata?.title || item.object?.slug || 'Unnamed Item';
+                    const itemDescription = item.object?.metadata?.description || item.object?.category || 'No description available.';
+                    const itemPrice = item.pricing?.unitPrice || 0;
+                    const itemCategory = item.object?.category || 'N/A';
+                    const kingdomName = item.tile.owner || 'N/A';
+                    const imageUrl = item.object?.imageUrl || `https://placehold.co/400x300/e2e8f0/64748b?text=Image+Unavailable`;
+                    const itemUrl = item.tile?.url || '#';
+
+                    // Create the main card element
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'bg-gray-50 dark:bg-gray-700 rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl flex flex-col';
+
+                    // Construct the inner HTML for each card with more details
+                    itemCard.innerHTML = `
+                        <img src="${imageUrl}" alt="${itemName}" 
+                             class="w-full h-48 block mx-auto object-contain" 
+                             onerror="this.onerror=null; this.src='https://placehold.co/400x300/e2e8f0/64748b?text=Image+Unavailable';">
+                        <div class="p-4 flex-grow flex flex-col">
+                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">${itemName}</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-3 h-12 overflow-hidden flex-grow">
+                                ${itemDescription}
+                            </p>
+                            
+                            <!-- Information section organized in a 3-column grid -->
+                            <div class="grid grid-cols-3 gap-2 text-sm text-gray-700 dark:text-gray-300 mb-4">
+                                <!-- Kingdom Column -->
+                                <div class="flex flex-col">
+                                    <span class="font-semibold">Kingdom:</span>
+                                    <span>${kingdomName}</span>
+                                </div>
+                                <!-- Category Column -->
+                                <div class="flex flex-col">
+                                    <span class="font-semibold">Category:</span>
+                                    <span>${itemCategory}</span>
+                                </div>
+                                <!-- Quantity Column, now its own centered column -->
+                                <div class="flex flex-col items-center">
+                                    <span class="font-semibold text-center">${quantityLabel}:</span>
+                                    <span class="text-center font-bold">${quantityValue}</span>
+                                </div>
+                            </div>
+
+                            <!-- Price and button section -->
+                            <div class="flex items-center justify-between mt-auto">
+                                <span class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 flex items-center">
+                                    <img src="${GOLD_COIN_IMAGE_URL}" alt="Gold Coin" class="w-6 h-6 mr-1" />
+                                    ${itemPrice.toFixed(2)}
+                                </span>
+                                <a href="${itemUrl}" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    `;
+
+                    container.appendChild(itemCard);
+                });
+            };
+
+            // Event listeners for the main buttons
+            buyButton.addEventListener('click', () => {
+                searchInput.value = ''; // Reset search field
+                fetchMarketplaceData('toBuy');
+            });
+            sellButton.addEventListener('click', () => {
+                searchInput.value = ''; // Reset search field
+                fetchMarketplaceData('toSell');
+            });
+            
+            // Event listeners for the filter, sort, and search dropdowns/inputs
+            categorySelect.addEventListener('change', applyFiltersAndSort);
+            sortSelect.addEventListener('change', applyFiltersAndSort);
+            itemsPerPageSelect.addEventListener('change', (e) => {
+                itemsPerPage = parseInt(e.target.value, 10);
+                applyFiltersAndSort();
+            });
+            searchInput.addEventListener('input', applyFiltersAndSort);
+            
+            // Event listeners for pagination buttons
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderPaginatedItems();
+                }
+            });
+            
+            nextButton.addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredAndSortedItems.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderPaginatedItems();
+                }
+            });
+
+            // Initial call to fetch data when the page loads, defaulting to 'toBuy'
+            fetchMarketplaceData('toBuy');
+        });
+    </script>
+
+</body>
+</html>
