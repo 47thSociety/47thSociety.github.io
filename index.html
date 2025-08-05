@@ -74,7 +74,9 @@ none; } }
     <button id="sYLb" onclick="changeio();" style="float: right">
         ⚪
     </button>
-        <br /><center><img class="logos" src="./logos.png" onclick="window.open('https://nomstead.com/?ref=btrpazme', '_blank')" id="headers"></img></center>
+        <br />
+        <center><img class="logos" src="./logos.png" onclick="window.open('https://nomstead.com/?ref=btrpazme', '_blank')" id="headers"></img></center>
+
         <h1 class="text-3xl md:text-5xl font-extrabold text-center text-gray-900 dark:text-white mb-8 md:mb-12" onclick="window.open('https://nomstead.com/?ref=btrpazme', '_blank')" id="headers">
             47th Marketplace
         </h1>
@@ -161,13 +163,13 @@ none; } }
             <span class="block sm:inline" id="error-text">Something went wrong. Please try again later.</span>
         </div>
 
-        <!-- Pagination Controls -->
-        <div id="pagination-controls" class="flex justify-center items-center space-x-4 mt-8 hidden">
-            <button id="prev-page-button" class="px-4 py-2 rounded-full font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+        <!-- Pagination Controls (Top) -->
+        <div id="pagination-controls-top" class="flex justify-center items-center space-x-4 mt-8 hidden">
+            <button id="prev-page-button-top" class="px-4 py-2 rounded-full font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                 Previous
             </button>
-            <span id="page-info" class="text-gray-700 dark:text-gray-300 font-semibold">Page 1 of 1</span>
-            <button id="next-page-button" class="px-4 py-2 rounded-full font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span id="page-info-top" class="text-gray-700 dark:text-gray-300 font-semibold">Page 1 of 1</span>
+            <button id="next-page-button-top" class="px-4 py-2 rounded-full font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                 Next
             </button>
         </div>
@@ -175,6 +177,17 @@ none; } }
         <!-- Container for marketplace items -->
         <div id="marketplace-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8">
             <!-- Items will be injected here by JavaScript -->
+        </div>
+
+        <!-- Pagination Controls (Bottom) -->
+        <div id="pagination-controls-bottom" class="flex justify-center items-center space-x-4 mt-8 hidden">
+            <button id="prev-page-button-bottom" class="px-4 py-2 rounded-full font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Previous
+            </button>
+            <span id="page-info-bottom" class="text-gray-700 dark:text-gray-300 font-semibold">Page 1 of 1</span>
+            <button id="next-page-button-bottom" class="px-4 py-2 rounded-full font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+            </button>
         </div>
     </div>
     <br />
@@ -252,11 +265,18 @@ none; } }
             const sortSelect = document.getElementById('sort-select'); 
             const itemsPerPageSelect = document.getElementById('items-per-page-select');
             const searchInput = document.getElementById('search-input'); 
-            const paginationControls = document.getElementById('pagination-controls');
-            const prevButton = document.getElementById('prev-page-button');
-            const nextButton = document.getElementById('next-page-button');
-            const pageInfo = document.getElementById('page-info');
             const itemCountDisplay = document.getElementById('item-count-display');
+
+            // Pagination controls for both top and bottom
+            const paginationControlsTop = document.getElementById('pagination-controls-top');
+            const prevButtonTop = document.getElementById('prev-page-button-top');
+            const nextButtonTop = document.getElementById('next-page-button-top');
+            const pageInfoTop = document.getElementById('page-info-top');
+
+            const paginationControlsBottom = document.getElementById('pagination-controls-bottom');
+            const prevButtonBottom = document.getElementById('prev-page-button-bottom');
+            const nextButtonBottom = document.getElementById('next-page-button-bottom');
+            const pageInfoBottom = document.getElementById('page-info-bottom');
 
             // Store the full dataset to allow for filtering, sorting, and pagination without re-fetching
             let marketplaceData = { toBuy: [], toSell: [] };
@@ -401,9 +421,11 @@ none; } }
 
                 // Show/hide pagination controls based on total items
                 if (filteredAndSortedItems.length > itemsPerPage) {
-                    paginationControls.classList.remove('hidden');
+                    paginationControlsTop.classList.remove('hidden');
+                    paginationControlsBottom.classList.remove('hidden');
                 } else {
-                    paginationControls.classList.add('hidden');
+                    paginationControlsTop.classList.add('hidden');
+                    paginationControlsBottom.classList.add('hidden');
                 }
                 
                 // Render the items for the current page
@@ -416,14 +438,17 @@ none; } }
              * @param {number} totalPages - The total number of pages.
              */
             const renderPaginationControls = (totalPages) => {
-                // Update page information text
-                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+                // Update page information text for both top and bottom controls
+                pageInfoTop.textContent = `Page ${currentPage} of ${totalPages}`;
+                pageInfoBottom.textContent = `Page ${currentPage} of ${totalPages}`;
 
-                // Disable/enable 'Previous' button
-                prevButton.disabled = currentPage === 1;
+                // Disable/enable 'Previous' button for both controls
+                prevButtonTop.disabled = currentPage === 1;
+                prevButtonBottom.disabled = currentPage === 1;
 
-                // Disable/enable 'Next' button
-                nextButton.disabled = currentPage === totalPages || totalPages === 0;
+                // Disable/enable 'Next' button for both controls
+                nextButtonTop.disabled = currentPage === totalPages || totalPages === 0;
+                nextButtonBottom.disabled = currentPage === totalPages || totalPages === 0;
             };
 
             /**
@@ -576,21 +601,21 @@ none; } }
             });
             searchInput.addEventListener('input', applyFiltersAndSort);
             
-            // Event listeners for pagination buttons
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderPaginatedItems();
-                }
-            });
-            
-            nextButton.addEventListener('click', () => {
+            // Function to handle page change and render
+            const changePage = (change) => {
                 const totalPages = Math.ceil(filteredAndSortedItems.length / itemsPerPage);
-                if (currentPage < totalPages) {
-                    currentPage++;
+                const newPage = currentPage + change;
+                if (newPage > 0 && newPage <= totalPages) {
+                    currentPage = newPage;
                     renderPaginatedItems();
                 }
-            });
+            };
+            
+            // Event listeners for pagination buttons
+            prevButtonTop.addEventListener('click', () => changePage(-1));
+            nextButtonTop.addEventListener('click', () => changePage(1));
+            prevButtonBottom.addEventListener('click', () => changePage(-1));
+            nextButtonBottom.addEventListener('click', () => changePage(1));
 
             // Initial call to fetch data when the page loads, defaulting to 'toBuy'
             fetchMarketplaceData('toBuy');
