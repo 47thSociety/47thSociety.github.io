@@ -270,6 +270,23 @@ none; } }
       </p>
 
     <script>
+      var refresh = window.localStorage.getItem("refresh");
+      console.log(refresh);
+      setTimeout(function () {
+        if (refresh === null) {
+          window.localStorage.setItem("refresh", "Information Updated!");
+          window.location.reload();
+        }
+      }, 500);
+
+      setTimeout(function () {
+        localStorage.removeItem("refresh");
+        var elementToHide = document.getElementById("loadingScreen");
+        if (elementToHide) {
+          elementToHide.style.display = "none";
+        }
+      }, 3000);
+
             const images = [
                 "./img/0.png",
                 "./img/1.png",
@@ -311,14 +328,14 @@ none; } }
             // Set an interval to change the image every 250 milliseconds (0.25 seconds)
             setInterval(changeImage, 250);
 
-
-
           // Get a reference to the loading screen and main content elements
     const loadingScreen = document.getElementById('loading-screen');
 
     // Wait for the entire page to load before starting the timer
       // Use setTimeout to hide the loading screen after 3 seconds (3000 milliseconds)
-      setTimeout(() => {
+      
+        if (refresh) {
+        setTimeout(() => {
         // Fade out the loading screen by setting its opacity to 0
         loadingScreen.style.opacity = '0';
         
@@ -326,15 +343,9 @@ none; } }
         // and show the main content. We use another setTimeout for this.
         setTimeout(() => {
           loadingScreen.style.display = 'none';
-          
-          // Now, show the main content by adding the 'visible' class
-          mainContent.style.display = 'block';
-          setTimeout(() => {
-            mainContent.classList.add('visible');
-          }, 10); // Small delay to ensure the display change is registered before the opacity transition
-          
         }, 0); // This delay should match the CSS transition duration
-      }, 1000); // 3-second delay for the loading screen
+      }, 1000);
+        }
 
             function getRandomHexColor() {
                 // Generate a random integer between 0 and 16777215 (which is FFFFFF in hexadecimal)
@@ -757,26 +768,6 @@ none; } }
             // Initial call to fetch data when the page loads, defaulting to 'toBuy'
             fetchMarketplaceData('toBuy');
         });
-
-
-
-      var refresh = window.localStorage.getItem("refresh");
-      console.log(refresh);
-      setTimeout(function () {
-        if (refresh === null) {
-          window.localStorage.setItem("refresh", "1");
-          window.location.reload();
-        }
-      }, 500); // 1500 milliseconds = 1.5 seconds
-
-      setTimeout(function () {
-        localStorage.removeItem("refresh");
-        
-        var elementToHide = document.getElementById("loadingScreen");
-        if (elementToHide) {
-          elementToHide.style.display = "none";
-        }
-      }, 3000); // 1700 milliseconds = 1.7 seconds
     </script>
 
 </body>
